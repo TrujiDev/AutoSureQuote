@@ -20,6 +20,26 @@ UI.prototype.fillOptions = () => {
 	}
 };
 
+UI.prototype.showMessage = (message, type) => {
+    const div = document.createElement('DIV');
+    
+	if (type === 'error') {
+		div.classList.add('error');
+	} else {
+		div.classList.add('correct');
+    }
+    
+	div.classList.add('message', 'mt-10');
+    div.textContent = message;
+    
+	const form = document.querySelector('#insurance-quote');
+	form.insertBefore(div, document.querySelector('#result'));
+
+	setTimeout(() => {
+		div.remove();
+	}, 3000);
+};
+
 const ui = new UI();
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -41,8 +61,8 @@ function quoteInsurance(event) {
 	const type = document.querySelector('input[name="type"]:checked').value;
 
 	if (brand === '' || year === '' || type === '') {
-		console.log('Error');
-	} else {
-		console.log('Quote...');
-	}
+        ui.showMessage('All fields are required', 'error');
+        return;
+    }
+    ui.showMessage('Quoting...', 'correct');
 }
