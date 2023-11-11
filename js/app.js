@@ -4,6 +4,45 @@ function Insurance(brand, year, type) {
 	this.type = type;
 }
 
+Insurance.prototype.quoteInsurance = function () {
+	/* 
+		1 = American 1.15
+		2 = Asian 1.05
+		3 = European 1.35
+	*/
+
+	let price;
+	const base = 2000;
+
+	switch (this.brand) {
+		case '1':
+			price = base * 1.15;
+			break;
+
+		case '2':
+			price = base * 1.05;
+			break;
+
+		case '3':
+			price = base * 1.35;
+			break;
+
+		default:
+			break;
+	}
+
+	const difference = new Date().getFullYear() - this.year;
+	price -= (difference * 3 * price) / 100;
+
+	if (this.type === 'basic') {
+		price *= 1.3;
+	} else {
+		price *= 1.5;
+	}
+
+	return price;
+};
+
 function UI() {}
 
 UI.prototype.fillOptions = () => {
@@ -21,17 +60,17 @@ UI.prototype.fillOptions = () => {
 };
 
 UI.prototype.showMessage = (message, type) => {
-    const div = document.createElement('DIV');
-    
+	const div = document.createElement('DIV');
+
 	if (type === 'error') {
 		div.classList.add('error');
 	} else {
 		div.classList.add('correct');
-    }
-    
+	}
+
 	div.classList.add('message', 'mt-10');
-    div.textContent = message;
-    
+	div.textContent = message;
+
 	const form = document.querySelector('#insurance-quote');
 	form.insertBefore(div, document.querySelector('#result'));
 
@@ -61,8 +100,11 @@ function quoteInsurance(event) {
 	const type = document.querySelector('input[name="type"]:checked').value;
 
 	if (brand === '' || year === '' || type === '') {
-        ui.showMessage('All fields are required', 'error');
-        return;
-    }
-    ui.showMessage('Quoting...', 'correct');
+		ui.showMessage('All fields are required', 'error');
+		return;
+	}
+	ui.showMessage('Quoting...', 'correct');
+
+	const insurance = new Insurance(brand, year, type);
+	insurance.quoteInsurance();
 }
