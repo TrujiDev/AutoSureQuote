@@ -5,25 +5,19 @@ function Insurance(brand, year, type) {
 }
 
 Insurance.prototype.quoteInsurance = function () {
-	/* 
-		1 = American 1.15
-		2 = Asian 1.05
-		3 = European 1.35
-	*/
-
 	let price;
 	const base = 2000;
 
 	switch (this.brand) {
-		case '1':
+		case 'American':
 			price = base * 1.15;
 			break;
 
-		case '2':
+		case 'Asian':
 			price = base * 1.05;
 			break;
 
-		case '3':
+		case 'European':
 			price = base * 1.35;
 			break;
 
@@ -68,7 +62,7 @@ UI.prototype.showMessage = (message, type) => {
 		div.classList.add('correct');
 	}
 
-	div.classList.add('message', 'mt-10');
+	div.classList.add('mt-10');
 	div.textContent = message;
 
 	const form = document.querySelector('#insurance-quote');
@@ -76,6 +70,29 @@ UI.prototype.showMessage = (message, type) => {
 
 	setTimeout(() => {
 		div.remove();
+	}, 3000);
+};
+
+UI.prototype.showResult = (total, insurance) => {
+	const { brand, year, type } = insurance;
+
+	const div = document.createElement('DIV');
+	div.classList.add('mt-10');
+	div.innerHTML = `
+		<p class="header">Summary</p>
+		<p class="font-bold">Brand: <span class="font-normal">${brand}</span></p>
+		<p class="font-bold">Year: <span class="font-normal">${year}</span></p>
+		<p class="font-bold">Type: <span class="font-normal capitalize">${type}</span></p>
+		<p class="font-bold">Total: <span class="font-normal">$${total}</span></p>
+	`;
+
+	const result = document.querySelector('#result');
+	const spinner = document.querySelector('#loading');
+	spinner.style.display = 'block';
+
+	setTimeout(() => {
+		spinner.style.display = 'none';
+		result.appendChild(div);
 	}, 3000);
 };
 
@@ -103,8 +120,14 @@ function quoteInsurance(event) {
 		ui.showMessage('All fields are required', 'error');
 		return;
 	}
-	ui.showMessage('Quoting...', 'correct');
+
+	const results = document.querySelector('#result div');
+	if (results != null) {
+		results.remove();
+	}
 
 	const insurance = new Insurance(brand, year, type);
-	insurance.quoteInsurance();
+	const total = insurance.quoteInsurance();
+
+	ui.showResult(total, insurance);
 }
