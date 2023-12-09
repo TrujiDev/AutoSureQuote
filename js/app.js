@@ -1,16 +1,20 @@
-// Definition of a constructor function named 'Insurance' that takes three parameters: brand, year, type
+/**
+ * Represents an insurance policy.
+ * @constructor
+ * @param {string} brand - The brand of the vehicle.
+ * @param {number} year - The year of the vehicle.
+ * @param {string} type - The type of insurance policy.
+ */
 function Insurance(brand, year, type) {
-	this.brand = brand; // Assign the value of 'brand' to the 'brand' attribute of the object
-	this.year = year; // Assign the value of 'year' to the 'year' attribute of the object
-	this.type = type; // Assign the value of 'type' to the 'type' attribute of the object
+	this.brand = brand;
+	this.year = year;
+	this.type = type;
 }
 
-// Definition of a 'quoteInsurance' method in the prototype of 'Insurance'
 Insurance.prototype.quoteInsurance = function () {
-	let price; // Declaration of the 'price' variable to store the insurance price calculation
-	const base = 2000; // Definition of a constant 'base' with a value of 2000 as a base for the calculation
+	let price;
+	const base = 2000;
 
-	// Switch statement to calculate the price based on the car brand
 	switch (this.brand) {
 		case 'American':
 			price = base * 1.15;
@@ -25,126 +29,133 @@ Insurance.prototype.quoteInsurance = function () {
 			break;
 	}
 
-	// Calculation of the discount based on the car's age
+	/**
+	 * Represents the difference between the current year and the year property.
+	 * @type {number}
+	 */
 	const difference = new Date().getFullYear() - this.year;
 	price -= (difference * 3 * price) / 100;
 
-	// Adjustment of the price based on the type of insurance
 	if (this.type === 'basic') {
 		price *= 1.3;
 	} else {
 		price *= 1.5;
 	}
 
-	// Return the calculated price
 	return price;
 };
 
-// Definition of a constructor function named 'UI'
 function UI() {}
 
-// Definition of a 'fillOptions' method in the prototype of 'UI'
 UI.prototype.fillOptions = () => {
-	const max = new Date().getFullYear(); // Get the current year
-	const min = max - 23; // Calculate the minimum year by subtracting 23 years from the current year
+	const max = new Date().getFullYear();
+	const min = max - 23;
 
-	const selectYear = document.querySelector('#year'); // Select the element with the id 'year' in the document
+	/**
+	 * Represents the select element for choosing a year.
+	 * @type {HTMLSelectElement}
+	 */
+	const selectYear = document.querySelector('#year');
 
-	// For loop to fill the options of the dropdown menu with years
 	for (let i = max; i >= min; i--) {
-		const option = document.createElement('option'); // Create an 'option' element in the document
-		option.value = i; // Assign the value of the year to the 'value' attribute of the 'option' element
-		option.textContent = i; // Assign the text of the year to the content of the 'option' element
-		selectYear.appendChild(option); // Add the 'option' element to the dropdown menu
+		const option = document.createElement('option');
+		option.value = i;
+		option.textContent = i;
+		selectYear.appendChild(option);
 	}
 };
 
-// Definition of a 'showMessage' method in the prototype of 'UI'
 UI.prototype.showMessage = (message, type) => {
-	const div = document.createElement('DIV'); // Create a 'div' element in the document
+	const div = document.createElement('DIV');
 
-	// Apply CSS classes to the 'div' element based on the message type
 	if (type === 'error') {
 		div.classList.add('error');
 	} else {
 		div.classList.add('correct');
 	}
 
-	div.classList.add('mt-10'); // Add a top margin class to the 'div' element
-	div.textContent = message; // Assign the message to the content of the 'div' element
+	div.classList.add('mt-10');
+	div.textContent = message;
 
-	const form = document.querySelector('#insurance-quote'); // Select the form with the id 'insurance-quote'
-	form.insertBefore(div, document.querySelector('#result')); // Insert the 'div' element before the element with the id 'result' in the form
+	/**
+	 * Represents the insurance quote form.
+	 * @type {HTMLFormElement}
+	 */
+	const form = document.querySelector('#insurance-quote');
+	form.insertBefore(div, document.querySelector('#result'));
 
-	// Remove the message after 3 seconds
 	setTimeout(() => {
 		div.remove();
 	}, 3000);
 };
 
-// Definition of a 'showResult' method in the prototype of 'UI'
 UI.prototype.showResult = (total, insurance) => {
-	const { brand, year, type } = insurance; // Destructure the 'insurance' object to get its attributes
+	const { brand, year, type } = insurance;
 
-	const div = document.createElement('DIV'); // Create a 'div' element in the document
-	div.classList.add('mt-10'); // Add a top margin class to the 'div' element
+	const div = document.createElement('DIV');
+	div.classList.add('mt-10');
 	div.innerHTML = `
         <p class="header">Summary</p>
         <p class="font-bold">Brand: <span class="font-normal">${brand}</span></p>
         <p class="font-bold">Year: <span class="font-normal">${year}</span></p>
         <p class="font-bold">Type: <span class="font-normal capitalize">${type}</span></p>
         <p class="font-bold">Total: <span class="font-normal">$${total}</span></p>
-    `; // Assign an HTML content to the 'div' element with information about the insurance and the total
+    `;
 
-	const result = document.querySelector('#result'); // Select the element with the id 'result'
-	const spinner = document.querySelector('#loading'); // Select the element with the id 'loading'
-	spinner.style.display = 'block'; // Show the spinner
+	const result = document.querySelector('#result');
+	/**
+	 * Represents a spinner element.
+	 * @type {HTMLElement}
+	 */
+	const spinner = document.querySelector('#loading');
+	spinner.style.display = 'block';
 
-	// Show the result after 3 seconds and hide the spinner
 	setTimeout(() => {
 		spinner.style.display = 'none';
 		result.appendChild(div);
 	}, 3000);
 };
 
-// Instance of the UI class
 const ui = new UI();
 
-// Event listener for the DOMContentLoaded event to execute the 'fillOptions' function when the document is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
 	ui.fillOptions();
 });
 
-// Event setup
 eventListeners();
 
-// Function to set up events
+/**
+ * Attaches event listeners to the form element.
+ */
 function eventListeners() {
-	const form = document.querySelector('#insurance-quote'); // Select the form with the id 'insurance-quote'
-	form.addEventListener('submit', quoteInsurance); // Add a 'submit' event to the form that executes the 'quoteInsurance' function
+	const form = document.querySelector('#insurance-quote');
+	form.addEventListener('submit', quoteInsurance);
 }
 
-// Function to handle the submission of the insurance quote form
+/**
+ * Calculates the insurance quote based on the selected brand, year, and type.
+ * @param {Event} event - The event object.
+ * @returns {void}
+ */
 function quoteInsurance(event) {
-	event.preventDefault(); // Prevent the default form behavior
+	event.preventDefault();
 
-	const brand = document.querySelector('#brand').value; // Get the value of the brand field
-	const year = document.querySelector('#year').value; // Get the value of the year field
-	const type = document.querySelector('input[name="type"]:checked').value; // Get the value of the selected insurance type
+	const brand = document.querySelector('#brand').value;
+	const year = document.querySelector('#year').value;
+	const type = document.querySelector('input[name="type"]:checked').value;
 
-	// Validate the form inputs
 	if (brand === '' || year === '' || type === '') {
-		ui.showMessage('All fields are required', 'error'); // Show an error message if any field is empty
+		ui.showMessage('All fields are required', 'error');
 		return;
 	}
 
-	const results = document.querySelector('#result div'); // Select the div element within #result
+	const results = document.querySelector('#result div');
 	if (results != null) {
-		results.remove(); // Remove previous results
+		results.remove();
 	}
 
-	const insurance = new Insurance(brand, year, type); // Create an Insurance object with the form data
-	const total = insurance.quoteInsurance(); // Calculate the total insurance cost
+	const insurance = new Insurance(brand, year, type);
+	const total = insurance.quoteInsurance();
 
-	ui.showResult(total, insurance); // Display the result in the user interface
+	ui.showResult(total, insurance);
 }
